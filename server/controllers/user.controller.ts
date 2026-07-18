@@ -8,6 +8,7 @@ import ejs from "ejs";
 import path from "path";
 import sendMailer from "../utils/sendMail";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 //register User
 interface IRegistrationBody {
@@ -172,6 +173,15 @@ export const logoutUser = CatchAsyncError(
     try {
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
+
+      // Retrieve and ensure the user ID is a string
+      const userId = req.user?._id?.toString();
+      if (!userId) {
+        return next(new ErrorHandler("User ID is missing", 400));
+      }
+
+      // Remove the user data from Redis
+      await redis.del(userId);
 
       res.status(200).json({
         success: true,
