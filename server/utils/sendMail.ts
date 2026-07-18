@@ -17,12 +17,12 @@ const sendMailer=async (option:EmailOption):Promise <void>=>{
         service:process.env.SMTP_SERVICE,
         auth:{
             user:process.env.SMTP_MAIL,
-            pass:process.env.SMTp_Password,
+            pass:process.env.SMTP_PASSWORD,
         }
     })
 
     const {email,subject,templete,data}=option;
-    const templetepath=path.join(__dirname,'../mail',templete);
+    const templetepath=path.join(__dirname,'../mails',templete);
     const html:string=await ejs.renderFile(templetepath,data);
     const mailOption={
         form:process.env.SMTP_MAIL,
