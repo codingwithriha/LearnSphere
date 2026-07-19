@@ -1,5 +1,5 @@
 require("dotenv").config();
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
@@ -278,6 +278,59 @@ export const socialAuth = CatchAsyncError(
       } else {
         sendToken(user, res, 200);
       }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+//update User Info
+interface IUpdateUserInfo {
+  name: string;
+  email: string; // Keeping it in the interface but NOT allowing updates
+}
+
+export const updateUserInfo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { name, email } = req.body as IUpdateUserInfo;
+      console.log("Received Data:", req.body);
+
+      const userId = req.user?._id as string;
+      console.log("User ID:", userId);
+
+      if (!userId) {
+        return next(new ErrorHandler("User not authenticated", 401));
+      }
+
+      const user = await userModel.findById(userId);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      // ❌ Restrict email updates
+      if (email && email !== user.email) {
+        return next(new ErrorHandler("Email cannot be changed", 400));
+      }
+      // ✅ Only update name if provided
+      if (name) {
+        user.name = name;
+        await user.save();
+
+        // ✅ Update user data in Redis
+        await redis.set(userId, JSON.stringify(user)).catch((err) => {
+          console.error("Redis Error:", err);
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: "User name updated successfully",
+          user,
+        });
+      } else {
+        return next(new ErrorHandler("Name field is required", 400));
+      }
+      
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
