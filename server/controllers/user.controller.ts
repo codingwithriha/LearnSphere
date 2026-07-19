@@ -330,7 +330,42 @@ export const updateUserInfo = CatchAsyncError(
       } else {
         return next(new ErrorHandler("Name field is required", 400));
       }
-      
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+//update user password
+interface IUpdatePassword {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const updatePassword = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { oldPassword, newPassword } = req.body as IUpdatePassword;
+      console.log(req.body);
+      if (!oldPassword || !newPassword) {
+        return next(new ErrorHandler("Please enter old and new password", 400));
+      }
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId).select("+password");
+      if (user?.password == undefined) {
+        return next(new ErrorHandler("Invalid user", 400));
+      }
+      const isPasswordMatch = await user.comparePassword(oldPassword);
+      if (!isPasswordMatch) {
+        return next(new ErrorHandler("Invalid old password", 400));
+      }
+
+      user.password = newPassword;
+      await user.save();
+      return res.status(201).json({
+        success: true,
+        user,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
