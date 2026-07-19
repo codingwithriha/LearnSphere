@@ -10,7 +10,7 @@ interface IReview extends Document {
   user: IUser;
   rating: number;
   comment: string;
-  commnetReplies?: IComment[];
+  commentReplies?: IComment[];
 }
 
 interface ILink extends Document {
@@ -22,7 +22,7 @@ interface ICourseData extends Document {
   title: string;
   description: string;
   videoUrl: string;
-  videoThumbnail: object;
+
   videoSection: string;
   videoLength: number;
   videoPlayer: string;
@@ -41,7 +41,7 @@ export interface ICourse extends Document {
   level: string;
   demoUrl: string;
   benefits: { title: string }[];
-  prerequisties: { title: String }[];
+  prerequisites: { title: String }[];
   reviews: IReview[];
   courseData: ICourseData[];
   ratings?: number;
@@ -71,7 +71,7 @@ const reviewSchema = new Schema<IReview>(
       default: 0,
     },
     comment: String,
-    commnetReplies: [commentSchema],
+    commentReplies: [commentSchema],
   },
   { timestamps: true },
 );
@@ -80,7 +80,7 @@ const courseDataSchema = new Schema<ICourseData>({
   title: String,
   description: String,
   videoUrl: String,
-  videoThumbnail: Object,
+
   videoSection: String,
   videoLength: Number,
   videoPlayer: String,
@@ -112,11 +112,11 @@ const courseSchema = new Schema<ICourse>(
     },
     thumbnail: {
       public_id: {
-        require: true,
+        //require: true,
         type: String,
       },
       url: {
-        require: true,
+        //require: true,
         type: String,
       },
     },
@@ -135,7 +135,7 @@ const courseSchema = new Schema<ICourse>(
     benefits: {
       type: [{ title: String }],
     },
-    prerequisties: {
+    prerequisites: {
       type: [{ title: String }],
     },
     courseData: [courseDataSchema],
