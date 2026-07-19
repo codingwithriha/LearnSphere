@@ -14,7 +14,7 @@ import {
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
 import { getUserById } from "../services/user.service";
-import { getSystemErrorMap } from "util";
+import cloudinary from "cloudinary";
 
 //register User
 interface IRegistrationBody {
@@ -363,6 +363,56 @@ export const updatePassword = CatchAsyncError(
       user.password = newPassword;
       await user.save();
       return res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+//update profile picture
+interface IUpdateProfilePicture {
+  avatar: string;
+}
+
+export const updateProfilePicture = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { avatar } = req.body as IUpdateProfilePicture;
+      const userId = req.user?._id;
+
+      const user = await userModel.findById(userId);
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      if (avatar) {
+        // Delete the old avatar if it exists
+        if (user.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        }
+
+        // Upload the new avatar
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        // Update user's avatar
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+
+        // Save updated user information
+        await user.save();
+        await redis.set(userId as string, JSON.stringify(user));
+      }
+
+      // Respond to the client
+      res.status(200).json({
         success: true,
         user,
       });
