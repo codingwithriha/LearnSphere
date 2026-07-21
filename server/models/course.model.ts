@@ -18,6 +18,7 @@ interface ILink extends Document {
   url: string;
 }
 
+
 interface ICourseData extends Document {
   title: string;
   description: string;
@@ -36,7 +37,7 @@ export interface ICourse extends Document {
   description: string;
   price: number;
   estimatedPrice?: number;
-  thumbnail: object;
+  thumbnail: IThumbnail;
   tags: string;
   level: string;
   demoUrl: string;
@@ -47,6 +48,11 @@ export interface ICourse extends Document {
   ratings?: number;
   purchased?: number;
   category: string;
+}
+
+interface IThumbnail {
+  public_id: string;
+  url: string;
 }
 
 const linkSchema = new Schema<ILink>({
@@ -112,11 +118,9 @@ const courseSchema = new Schema<ICourse>(
     },
     thumbnail: {
       public_id: {
-        //require: true,
         type: String,
       },
       url: {
-        //require: true,
         type: String,
       },
     },
