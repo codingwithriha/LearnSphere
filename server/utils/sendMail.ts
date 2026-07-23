@@ -6,7 +6,7 @@ dotenv.config();
 interface EmailOption{
     email:string;
     subject:string,
-    templete:string,
+    template:string,
     data:{[key:string]:any}
 }
 
@@ -21,8 +21,8 @@ const sendMailer=async (option:EmailOption):Promise <void>=>{
         }
     })
 
-    const {email,subject,templete,data}=option;
-    const templetepath=path.join(__dirname,'../mails',templete);
+    const {email,subject,template,data}=option;
+    const templetepath=path.join(__dirname,'../mails',template);
     const html:string=await ejs.renderFile(templetepath,data);
     const mailOption={
         form:process.env.SMTP_MAIL,

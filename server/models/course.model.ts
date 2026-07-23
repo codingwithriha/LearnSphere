@@ -3,7 +3,7 @@ import { IUser } from "./user.model";
 interface IComment extends Document {
   user: IUser;
   question: string;
-  questionReplies?: IComment[];
+  questionReplies: IComment[];
 }
 
 interface IReview extends Document {
