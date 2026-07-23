@@ -30,6 +30,7 @@ courseRouter.get(
 
 courseRouter.get(
     "/get-course-content/:id",
+    isAuthenticated,
     getCourseByUser
 )
 export default courseRouter;
