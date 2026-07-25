@@ -11,11 +11,10 @@ notificationRouter.get(
   getNotifications,
 );
 
-notificationRouter.get(
-  "/update-notifications",
+notificationRouter.put(
+  "/update-notifications/:id",
   isAuthenticated,
   authorizeRoles("admin"),
   updateNotification,
 );
-
 export default notificationRouter;
