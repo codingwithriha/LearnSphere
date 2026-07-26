@@ -13,7 +13,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById } from "../services/user.service";
 import cloudinary from "cloudinary";
 
 //register User
@@ -55,7 +55,7 @@ export const registrationUser = CatchAsyncError(
         await sendMailer({
           email: user.email,
           subject: "Activate your account",
-          templete: "activation-mail.ejs", // Ensure the template name is correct /activation-mail.ejs
+          template: "activation-mail.ejs", // Ensure the template name is correct /activation-mail.ejs
           data,
         });
 
@@ -416,6 +416,17 @@ export const updateProfilePicture = CatchAsyncError(
         success: true,
         user,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+// get all users --- only for admin
+export const getAllUsers = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
