@@ -2,6 +2,7 @@ import { Express } from "express";
 import userModel from "../models/user.model";
 import { Request, Response } from "express";
 import { redis } from "../utils/redis";
+import mongoose from "mongoose";
 
 export const getUserById = async (id: string, res: Response) => {
   const userJson = await redis.get(id);
@@ -21,5 +22,23 @@ export const getAllUsersService = async (res: Response) => {
   res.status(201).json({
     success: true,
     users,
+  });
+};
+
+// update user role
+export const updateUserRoleService = async (
+  res: Response,
+  id: mongoose.Types.ObjectId,
+  role: string
+) => {
+  const user = await userModel.findByIdAndUpdate(
+    id,
+    { role },
+    { new: true }
+  );
+
+  res.status(201).json({
+    success: true,
+    user,
   });
 };
