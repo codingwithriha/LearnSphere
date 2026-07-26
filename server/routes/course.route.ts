@@ -1,5 +1,5 @@
 import express from "express";
-import { addAnwser, addQuestion, addReplyToReview, addReview, editCourse, getAdminAllCourses, getAllCourse, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller";
+import { addAnwser, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, getAdminAllCourses, getAllCourse, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import { getAllCoursesService } from "../services/course.service";
 
@@ -60,6 +60,13 @@ courseRouter.get(
     isAuthenticated,
     authorizeRoles("admin"),
     getAdminAllCourses
+)
+
+courseRouter.delete(
+    "/delete-course/:id",
+    isAuthenticated,
+    authorizeRoles("admin"),
+    deleteCourse
 )
 
 export default courseRouter;
