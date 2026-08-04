@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { BiMoon, BiSun } from "react-icons/bi";
 
- const ThemeSwitcher = () => {
+export const ThemeSwitcher = () => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -32,5 +32,3 @@ import { BiMoon, BiSun } from "react-icons/bi";
     </div>
   );
 };
-
-export default ThemeSwitcher;

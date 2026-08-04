@@ -2,11 +2,12 @@
 import Link from "next/link";
 import React, { FC, useEffect, useState } from "react";
 import NavItems from "../utils/NavItems";
+import { ThemeSwitcher } from "../utils/ThemeSwitcher";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 import CustomModal from "../utils/CustomModal";
 import Login from "../components/Auth/Login";
 import SignUp from "../components/Auth/SignUp";
-import Verification from "./Auth/Verification";
+import Verification from "../components/Auth/Verification";
 import Image from "next/image";
 import avatar from "../../public/assests/avatar.png";
 import { useSession } from "next-auth/react";
@@ -14,7 +15,6 @@ import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/aut
 import { toast } from "react-hot-toast";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./Loader/Loader";
-import ThemeSwitcher from "../utils/ThemeSwitcher";
 
 type Props = {
   open: boolean;
@@ -29,7 +29,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const {data:userData,isLoading,refetch} = useLoadUserQuery(undefined,{});
   const { data } = useSession();
-  const [socialAuth, { isSuccess }] = useSocialAuthMutation();
+  const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
   const [logout, setLogout] = useState(false);
   const {} = useLogOutQuery(undefined, {
     skip: !logout ? true : false,
@@ -97,7 +97,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                 href={"/"}
                 className={`text-[25px] font-Poppins font-[500] text-black dark:text-white`}
               >
-                LearnSphere 
+                LearnSphere
               </Link>
             </div>
             <div className="flex items-center">
@@ -163,7 +163,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
               <br />
               <br />
               <p className="text-[16px] px-2 pl-5 text-black dark:text-white">
-                Copyright © 2023 ELearning
+                Copyright © 2023 LearnSphere
               </p>
             </div>
           </div>
