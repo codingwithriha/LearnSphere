@@ -2,26 +2,11 @@ import Link from "next/link";
 import React from "react";
 
 export const navItemsData = [
-  {
-    name: "Home",
-    url: "/",
-  },
-  {
-    name: "Courses",
-    url: "/courses",
-  },
-  {
-    name: "About",
-    url: "/about",
-  },
-  {
-    name: "Policy",
-    url: "/policy",
-  },
-  {
-    name: "FAQ",
-    url: "/faq",
-  },
+  { name: "Home", url: "/" },
+  { name: "Courses", url: "/courses" },
+  { name: "About", url: "/about" },
+  { name: "Policy", url: "/policy" },
+  { name: "FAQ", url: "/faq" },
 ];
 
 type Props = {
@@ -30,48 +15,35 @@ type Props = {
 };
 
 const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
+  const linkClass = (index: number, mobile = false) =>
+    `${
+      activeItem === index
+        ? "text-indigo-600 dark:text-indigo-400 font-[600]"
+        : "text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400"
+    } ${mobile ? "block py-4 text-[18px] px-4" : "text-[16px] px-5"} font-Poppins transition-colors duration-200`;
+
   return (
     <>
-      <div className="hidden 800px:flex">
-        {navItemsData &&
-          navItemsData.map((i, index) => (
-            <Link href={`${i.url}`} key={index} passHref>
-              <span
-                className={`${
-                  activeItem === index
-                    ? "dark:text-[#37a39a] text-[crimson]"
-                    : "dark:text-white text-black"
-                } text-[18px] px-6 font-Poppins font-[400]`}
-              >
-                {i.name}
-              </span>
-            </Link>
-          ))}
+      <div className="hidden 800px:flex items-center">
+        {navItemsData.map((item, index) => (
+          <Link href={item.url} key={item.name} className={linkClass(index)}>
+            {item.name}
+          </Link>
+        ))}
       </div>
       {isMobile && (
-        <div className="800px:hidden mt-5">
-             <div className="w-full text-center py-6">
-            <Link href={"/"} passHref>
-              <span
-                className={`text-[25px] font-Poppins font-[500] text-black dark:text-white`}
-              >LearnSphere</span>
+        <div className="800px:hidden mt-2">
+          <div className="w-full text-center py-4 border-b border-slate-200 dark:border-slate-700 mb-2">
+            <Link href="/" className="text-[22px] font-Poppins font-[700] text-gradient">
+              LearnSphere
             </Link>
           </div>
-            {navItemsData &&
-              navItemsData.map((i, index) => (
-                <Link href="/" passHref key={index}>
-                  <span
-                    className={`${
-                      activeItem === index
-                        ? "dark:text-[#37a39a] text-[crimson]"
-                        : "dark:text-white text-black"
-                    } block py-5 text-[18px] px-6 font-Poppins font-[400]`}
-                  >
-                    {i.name}
-                  </span>
-                </Link>
-              ))}
-          </div>
+          {navItemsData.map((item, index) => (
+            <Link href={item.url} key={item.name} className={linkClass(index, true)}>
+              {item.name}
+            </Link>
+          ))}
+        </div>
       )}
     </>
   );

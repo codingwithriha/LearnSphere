@@ -11,8 +11,10 @@ import NotificationModel from "../models/notification.model";
 import { getAllOrdersService, newOrder } from "../services/order.service";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
-require("dotenv").config();
-const stripe = require("stripe");
+import { userOwnsCourse } from "../utils/courseHelper";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 // create order
 export const createOrder = CatchAsyncError(
@@ -34,9 +36,7 @@ export const createOrder = CatchAsyncError(
 
       const user = await userModel.findById(req.user?._id);
 
-      const courseExistInUser = user?.courses.some(
-        (course: any) => course._id.toString() === courseId,
-      );
+      const courseExistInUser = userOwnsCourse(user?.courses, courseId);
 
       if (courseExistInUser) {
         return next(

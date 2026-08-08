@@ -30,21 +30,22 @@ const Profile: FC<Props> = ({ user }) => {
     await signOut();
   };
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 85) {
-        setScroll(true);
-      } else {
-        setScroll(false);
-      }
-    });
-  }
+  useEffect(() => {
+    const handleScroll = () => {
+      setScroll(window.scrollY > 85);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (data) {
       const filteredCourses = user.courses
         .map((userCourse: any) =>
-          data.courses.find((course: any) => course._id === userCourse._id)
+          data.courses.find(
+            (course: any) => course._id === (userCourse.courseId || userCourse._id)
+          )
         )
         .filter((course: any) => course !== undefined);
       setCourses(filteredCourses);
