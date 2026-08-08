@@ -10,6 +10,7 @@ import sendMailer from "../utils/sendMail";
 import ejs from "ejs";
 import path from "path";
 import NotificationModel from "../models/notification.model";
+import { userOwnsCourse } from "../utils/courseHelper";
 
 // upload course
 export const uploadCourse = CatchAsyncError(
@@ -155,9 +156,7 @@ export const getCourseByUser = CatchAsyncError(
       const userCourseList = req.user?.courses;
       const courseId = req.params.id;
 
-      const courseExists = userCourseList?.find(
-        (course: any) => course._id.toString() === courseId,
-      );
+      const courseExists = userOwnsCourse(userCourseList, courseId);
       if (!courseExists) {
         return next(
           new ErrorHandler("You are not eligible to access this course", 404),
@@ -295,11 +294,6 @@ export const addAnwser = CatchAsyncError(
           title: courseContent.title,
         };
 
-        const html = await ejs.renderFile(
-          path.join(__dirname, "../mails/activation-mail.ejs"),
-          data,
-        );
-
         try {
           await sendMailer({
             email: question.user.email,
@@ -338,9 +332,7 @@ export const addReview = CatchAsyncError(
       const courseId = req.params.id;
 
       // check if courseId already exists in userCourseList based on _id
-      const courseExists = userCourseList?.some(
-        (course: any) => course._id.toString() === courseId.toString(),
-      );
+      const courseExists = userOwnsCourse(userCourseList, courseId);
 
       if (!courseExists) {
         return next(
@@ -466,7 +458,7 @@ export const deleteCourse = CatchAsyncError(
         return next(new ErrorHandler("course not found", 404));
       }
 
-      await course.deleteOne({ id });
+      await CourseModel.findByIdAndDelete(id);
 
       await redis.del(id);
 

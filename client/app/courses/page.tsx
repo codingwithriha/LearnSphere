@@ -28,7 +28,7 @@ const Page = (props: Props) => {
     }
     if (category !== "All") {
       setcourses(
-        data?.courses.filter((item: any) => item.categories === category)
+        data?.courses.filter((item: any) => item.category === category)
       );
     }
     if (search) {
@@ -64,29 +64,24 @@ const Page = (props: Props) => {
               }
             />
             <br />
-            <div className="w-full flex items-center flex-wrap">
-              <div
-                className={`h-[35px] ${
-                  category === "All" ? "bg-[crimson]" : "bg-[#5050cb]"
-                } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
+            <div className="w-full flex items-center flex-wrap gap-2 py-2">
+              <button
+                type="button"
+                className={`category-pill ${category === "All" ? "category-pill-active" : "category-pill-inactive"}`}
                 onClick={() => setCategory("All")}
               >
                 All
-              </div>
+              </button>
               {categories &&
                 categories.map((item: any, index: number) => (
-                  <div key={index}>
-                    <div
-                      className={`h-[35px] ${
-                        category === item.title
-                          ? "bg-[crimson]"
-                          : "bg-[#5050cb]"
-                      } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
-                      onClick={() => setCategory(item.title)}
-                    >
-                      {item.title}
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    key={index}
+                    className={`category-pill ${category === item.title ? "category-pill-active" : "category-pill-inactive"}`}
+                    onClick={() => setCategory(item.title)}
+                  >
+                    {item.title}
+                  </button>
                 ))}
             </div>
             {
