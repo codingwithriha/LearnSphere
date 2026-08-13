@@ -55,7 +55,7 @@ const About = () => {
           sky&apos;s the limit.
         </p>
         <br />
-        <span className="text-[22px]">codingwithriha</span>
+        <span className="text-[22px]">CodingWithRiha</span>
         <h5 className="text-[18px] font-Poppins">
           Founder and CEO of LearnSphere
         </h5>
