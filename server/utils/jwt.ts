@@ -54,11 +54,20 @@ export const sendToken = async (user: IUser, res: Response, statusCode: number) 
 
     // Parse environment variables
     
-    // Only set secure cookies in production mode
+    // Only set secure cookies in production mode.
+    // Also switch sameSite to 'none' in production so the cookies still get
+    // sent when the client (e.g. Vercel) and server (e.g. Render/Railway)
+    // live on different domains. 'lax' only works when both are on the same
+    // site, which is true for local dev (localhost:3000 <-> localhost:8000)
+    // but breaks cross-domain deployments.
     if (process.env.NODE_ENV === 'production') {
       accessTokenOptions.secure = true;
+      accessTokenOptions.sameSite = 'none';
+      refreshTokenOptions.secure = true;
+      refreshTokenOptions.sameSite = 'none';
     }
 
+    
     // Set cookies
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);

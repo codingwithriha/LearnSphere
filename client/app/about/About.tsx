@@ -1,67 +1,99 @@
 import React from "react";
+import Image from "next/image";
 import { styles } from "../styles/style";
+import {
+  HiOutlineAcademicCap,
+  HiOutlineUserGroup,
+  HiOutlineCurrencyDollar,
+  HiOutlineLightBulb,
+} from "react-icons/hi";
+
+const values = [
+  {
+    icon: HiOutlineLightBulb,
+    title: "Practical First",
+    description:
+      "Every course is built around real, shippable projects, not just theory. You learn by building the same things you'll build on the job.",
+  },
+  {
+    icon: HiOutlineCurrencyDollar,
+    title: "Affordable Education",
+    description:
+      "Price should never be the barrier between you and a career in tech. Our courses are priced so anyone can access quality education.",
+  },
+  {
+    icon: HiOutlineUserGroup,
+    title: "A Supportive Community",
+    description:
+      "You're never learning alone. Our community of learners and mentors is there to help you get unstuck, every step of the way.",
+  },
+  {
+    icon: HiOutlineAcademicCap,
+    title: "For Every Level",
+    description:
+      "Whether you're writing your first line of code or leveling up an existing career, there's a learning path built for where you are.",
+  },
+];
 
 const About = () => {
   return (
     <div className="text-black dark:text-white">
-      <br />
-      <h1 className={`${styles.title} 800px:!text-[45px]`}>
-        What is <span className="text-gradient">LearnSphere?</span>
-      </h1>
-
-      <br />
-      <div className="w-[95%] 800px:w-[85%] m-auto">
-        <p className="text-[18px] font-Poppins">
-          Are you ready to take your programming skills to the next level? Look
-          no further than LearnSphere, the premier programming community
-          dedicated to helping new programmers achieve their goals and reach
-          their full potential.
-          <br />
-          <br />
-          As the founder and CEO of LearnSphere, I know firsthand the challenges
-          that come with learning and growing in the programming industry.
-          That&apos;s why I created LearnSphere &ndash; to provide new
-          programmers with the resources and support they need to succeed.
-          <br />
-          <br />
-          Our YouTube channel is a treasure trove of informative videos on
-          everything from programming basics to advanced techniques. But
-          that&apos;s just the beginning. Our affordable courses are designed to
-          give you the high-quality education you need to succeed in the
-          industry, without breaking the bank.
-          <br />
-          <br />
-          At LearnSphere, we believe that price should never be a barrier to
-          achieving your dreams. That&apos;s why our courses are priced low
-          &ndash; so that anyone, regardless of their financial situation, can
-          access the tools and knowledge they need to succeed.
-          <br />
-          <br />
-          But LearnSphere is more than just a community &ndash; we&apos;re a
-          family. Our supportive community of like-minded individuals is here to
-          help you every step of the way, whether you&apos;re just starting out
-          or looking to take your skills to the next level.
-          <br />
-          <br />
-          With LearnSphere by your side, there&apos;s nothing standing between
-          you and your dream job. Our courses and community will provide you
-          with the guidance, support, and motivation you need to unleash your
-          full potential and become a skilled programmer.
-          <br />
-          <br />
-          So what are you waiting for? Join the LearnSphere family today and
-          let&apos;s conquer the programming industry together! With our
-          affordable courses, informative videos, and supportive community, the
-          sky&apos;s the limit.
+      {/* Intro */}
+      <div className="w-[92%] 800px:w-[75%] m-auto pt-14 pb-10 text-center">
+        <h1 className={`${styles.title} 800px:!text-[45px] !text-[32px]`}>
+          What is <span className="text-gradient">LearnSphere?</span>
+        </h1>
+        <p className={`${styles.label} !text-[17px] mt-4 max-w-[720px] mx-auto`}>
+          LearnSphere is a programming community built to help new
+          developers learn practical, in-demand skills and turn them into
+          real projects &mdash; without breaking the bank.
         </p>
-        <br />
-        <span className="text-[22px]">CodingWithRiha</span>
-        <h5 className="text-[18px] font-Poppins">
-          Founder and CEO of LearnSphere
-        </h5>
-        <br />
-        <br />
-        <br />
+      </div>
+
+      {/* Value cards */}
+      <div className="w-[92%] 800px:w-[85%] m-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {values.map(({ icon: Icon, title, description }) => (
+          <div
+            key={title}
+            className="glass-card rounded-2xl p-6 flex flex-col gap-3"
+          >
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-brand-500 to-coral-500 flex items-center justify-center">
+              <Icon size={22} className="text-white" />
+            </div>
+            <h4 className="font-Poppins font-[600] text-[17px]">{title}</h4>
+            <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300">
+              {description}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Founder note */}
+      <div className="w-[92%] 800px:w-[75%] m-auto mt-16 mb-16">
+        <div className="glass-card rounded-2xl p-8 800px:p-10 800px:flex gap-8 items-center">
+          <div className="800px:w-[30%] w-full flex justify-center 800px:justify-start mb-6 800px:mb-0">
+            <div className="w-[110px] h-[110px] rounded-full bg-gradient-to-r from-brand-500 to-coral-500 flex items-center justify-center text-white text-[36px] font-Poppins font-[700]">
+              CR
+            </div>
+          </div>
+          <div className="800px:w-[70%] w-full">
+            <p className="text-[16px] leading-relaxed text-slate-700 dark:text-slate-200">
+              &ldquo;I know firsthand the challenges that come with learning
+              and growing in the programming industry &mdash; that&apos;s why
+              I built LearnSphere. Our courses and community exist to give
+              you the guidance, support, and motivation to become a skilled
+              programmer, at a price that never stands in your way.&rdquo;
+            </p>
+            <div className="mt-5">
+              <span className="text-[18px] font-Poppins font-[600] text-gradient">
+                CodingWithRiha
+              </span>
+              <h5 className="text-[14px] font-Poppins text-slate-500 dark:text-slate-400">
+                Founder &amp; CEO, LearnSphere
+              </h5>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
