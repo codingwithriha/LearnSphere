@@ -14,7 +14,7 @@ const CoursePlayer: FC<Props> = ({ videoUrl }) => {
 
   useEffect(() => {
     axios
-      .post(`${process.env.NEXT_PUBLIC_SERVER_URI}getVdoCipherOTP`, {
+      .post(`${process.env.NEXT_PUBLIC_SERVER_URL}getVdoCipherOTP`, {
         videoId: videoUrl,
       })
       .then((res) => {
