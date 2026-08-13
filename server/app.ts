@@ -19,7 +19,7 @@ app.use(cookieParser());
 
 //cors -> cross origin resource sharing
 app.use(cors({
-    origin: process.env.ORIGIN || "http://localhost:3000",
+    origin: process.env.ORIGIN || "https://learn-sphere-ui.vercel.app",
     credentials: true,
 }));
 
