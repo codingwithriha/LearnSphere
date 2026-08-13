@@ -3,20 +3,21 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-rgb: 248, 250, 252;
-  --primary: 99, 102, 241;
-  --primary-dark: 79, 70, 229;
-  --accent: 139, 92, 246;
+  --foreground-rgb: 23, 18, 58;
+  --background-rgb: 255, 251, 247;
+  --primary: 124, 47, 245;
+  --primary-dark: 99, 23, 214;
+  --accent: 255, 107, 74;
+  --gold: 255, 176, 32;
   --surface: 255, 255, 255;
-  --border: 226, 232, 240;
+  --border: 237, 226, 255;
 }
 
 .dark {
-  --foreground-rgb: 248, 250, 252;
-  --background-rgb: 15, 23, 42;
-  --surface: 30, 41, 59;
-  --border: 51, 65, 85;
+  --foreground-rgb: 245, 240, 255;
+  --background-rgb: 20, 14, 43;
+  --surface: 42, 27, 87;
+  --border: 61, 40, 122;
 }
 
 input::-webkit-outer-spin-button,
@@ -54,41 +55,106 @@ body {
 .hero_animation {
   background-image: linear-gradient(
     147.92deg,
-    rgba(99, 102, 241, 0.35) 10.41%,
-    rgba(139, 92, 246, 0.15) 89.25%
+    rgba(124, 47, 245, 0.35) 10.41%,
+    rgba(255, 107, 74, 0.18) 89.25%
   );
   animation: changeBackgroundColor 8s infinite alternate;
 }
 
+/* Signature element: orbiting rings, echoing the "Sphere" in LearnSphere */
+.orbit-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orbit-ring {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1.5px dashed rgba(124, 47, 245, 0.25);
+}
+
+.dark .orbit-ring {
+  border-color: rgba(189, 148, 255, 0.2);
+}
+
+.orbit-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  opacity: 0.55;
+}
+
 .text-gradient {
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(90deg, #7c2ff5 0%, #b23bff 45%, #ff6b4a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .glass-card {
-  @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 shadow-lg shadow-indigo-500/5;
+  @apply backdrop-blur-md border border-brand-100 dark:border-brand-800 shadow-lg;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 25px -5px rgba(124, 47, 245, 0.1);
+}
+.dark .glass-card {
+  background-color: rgba(35, 26, 71, 0.85);
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5;
+  @apply bg-gradient-to-r from-coral-500 to-brand-500 hover:from-coral-600 hover:to-brand-600 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5;
+  box-shadow: 0 6px 16px -4px rgba(255, 107, 74, 0.35);
+}
+.btn-primary:hover {
+  box-shadow: 0 10px 22px -4px rgba(124, 47, 245, 0.35);
+}
+
+.btn-secondary {
+  @apply bg-white dark:bg-[#231A47] border-2 border-brand-500 text-brand-600 dark:text-brand-300 font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5;
+}
+.btn-secondary:hover {
+  background-color: rgba(124, 47, 245, 0.06);
+}
+.dark .btn-secondary:hover {
+  background-color: rgba(124, 47, 245, 0.15);
 }
 
 .input-field {
-  @apply w-full bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl h-[44px] px-4 outline-none mt-2 font-Poppins text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all;
+  @apply w-full bg-white border-2 border-brand-100 dark:border-brand-800 rounded-xl h-[44px] px-4 outline-none mt-2 font-Poppins text-[#17123A] dark:text-slate-100 placeholder:text-slate-400 focus:border-brand-500 transition-all;
+}
+.dark .input-field {
+  background-color: rgba(35, 26, 71, 0.6);
+}
+.input-field:focus {
+  box-shadow: 0 0 0 3px rgba(124, 47, 245, 0.2);
 }
 
 .category-pill {
-  @apply h-[38px] px-5 rounded-full flex items-center justify-center font-Poppins text-sm font-medium cursor-pointer transition-all duration-300 border;
+  @apply h-[38px] px-5 rounded-full flex items-center justify-center font-Poppins text-sm font-semibold cursor-pointer transition-all duration-300 border-2;
 }
 
 .category-pill-active {
-  @apply bg-gradient-to-r from-indigo-500 to-violet-600 text-white border-transparent shadow-md shadow-indigo-500/30;
+  @apply bg-gradient-to-r from-brand-500 to-coral-500 text-white border-transparent;
+  box-shadow: 0 6px 14px -3px rgba(124, 47, 245, 0.3);
 }
 
 .category-pill-inactive {
-  @apply bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-600 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400;
+  @apply bg-white dark:bg-[#231A47] text-[#17123A] dark:text-slate-200 border-brand-100 dark:border-brand-800 hover:border-coral-400 hover:text-coral-600 dark:hover:text-coral-400;
+}
+
+/* Udemy/Coursera-style ribbon badges for course cards */
+.badge-bestseller {
+  @apply inline-flex items-center gap-1 bg-amber-400 text-[#3d2a00] text-[11px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-md;
+}
+
+.badge-new {
+  @apply inline-flex items-center gap-1 bg-teal-500 text-white text-[11px] font-extrabold uppercase tracking-wide px-2.5 py-1 rounded-md;
+}
+
+.rating-star {
+  @apply text-amber-500;
 }
 
 @keyframes changeBackgroundColor {

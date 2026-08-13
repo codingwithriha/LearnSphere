@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
 import { Poppins } from "next/font/google";
-import { Josefin_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "./utils/theme-provider";
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Provider";
@@ -16,10 +16,10 @@ const poppins = Poppins({
   variable: "--font-Poppins",
 });
 
-const josefin = Josefin_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-Josefin",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-Inter",
 });
 
 export default function RootLayout({
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
-        className={`${poppins.variable} ${josefin.variable} bg-slate-50 dark:bg-slate-950 bg-no-repeat duration-300 antialiased`}
+        className={`${poppins.variable} ${inter.variable} bg-[#FFFBF7] dark:bg-[#140E2B] bg-no-repeat duration-300 antialiased`}
       >
         <Providers>
           <SessionProvider>

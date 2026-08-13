@@ -142,7 +142,7 @@ const Signup: FC<Props> = ({ setRoute }) => {
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
           Already have an account?{" "}
           <span
-            className="text-[#2190ff] pl-1 cursor-pointer"
+            className="text-coral-600 dark:text-coral-400 font-bold pl-1 cursor-pointer hover:underline"
             onClick={() => setRoute("Login")}
           >
             Sign in
