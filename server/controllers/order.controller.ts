@@ -24,7 +24,7 @@ export const createOrder = CatchAsyncError(
 
       if (payment_info) {
         if ("id" in payment_info) {
-          const paymentIntentId = payment_info.id;
+          const paymentIntentId = (payment_info as { id: string }).id;
           const paymentIntent =
             await stripe.paymentIntents.retrieve(paymentIntentId);
 

@@ -4,7 +4,7 @@ import React from "react";
 const Footer = () => {
   return (
     <footer className="mt-16">
-      <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-transparent via-coral-500/50 to-transparent" />
       <div className="w-[95%] 800px:w-full 800px:max-w-[85%] mx-auto px-2 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4">
           <div className="space-y-4">
@@ -17,17 +17,17 @@ const Footer = () => {
             <h3 className="text-[18px] font-[600] text-slate-900 dark:text-white">About</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/about" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link href="/about" className="text-sm text-slate-600 dark:text-slate-400 hover:text-coral-600 dark:hover:text-coral-400 transition-colors">
                   Our Story
                 </Link>
               </li>
               <li>
-                <Link href="/policy" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link href="/policy" className="text-sm text-slate-600 dark:text-slate-400 hover:text-coral-600 dark:hover:text-coral-400 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link href="/faq" className="text-sm text-slate-600 dark:text-slate-400 hover:text-coral-600 dark:hover:text-coral-400 transition-colors">
                   FAQ
                 </Link>
               </li>
@@ -37,12 +37,12 @@ const Footer = () => {
             <h3 className="text-[18px] font-[600] text-slate-900 dark:text-white">Quick Links</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/courses" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link href="/courses" className="text-sm text-slate-600 dark:text-slate-400 hover:text-coral-600 dark:hover:text-coral-400 transition-colors">
                   Courses
                 </Link>
               </li>
               <li>
-                <Link href="/profile" className="text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link href="/profile" className="text-sm text-slate-600 dark:text-slate-400 hover:text-coral-600 dark:hover:text-coral-400 transition-colors">
                   My Account
                 </Link>
               </li>

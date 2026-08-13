@@ -18,8 +18,8 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
   const linkClass = (index: number, mobile = false) =>
     `${
       activeItem === index
-        ? "text-indigo-600 dark:text-indigo-400 font-[600]"
-        : "text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400"
+        ? "text-coral-600 dark:text-coral-400 font-[700]"
+        : "text-[#3d3660] dark:text-slate-200 hover:text-coral-600 dark:hover:text-coral-400"
     } ${mobile ? "block py-4 text-[18px] px-4" : "text-[16px] px-5"} font-Poppins transition-colors duration-200`;
 
   return (

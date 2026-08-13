@@ -117,10 +117,10 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                         alt="Profile"
                         width={36}
                         height={36}
-                        className="w-[36px] h-[36px] rounded-full cursor-pointer ring-2 ring-indigo-500/30 hover:ring-indigo-500 transition-all"
+                        className="w-[36px] h-[36px] rounded-full cursor-pointer ring-2 ring-brand-500/30 hover:ring-coral-500 transition-all"
                         style={{
                           border:
-                            activeItem === 5 ? "2px solid #6366f1" : "none",
+                            activeItem === 5 ? "2px solid #ff6b4a" : "none",
                         }}
                       />
                     </Link>
