@@ -71,17 +71,17 @@ const Sidebar = () => {
       sx={{
         "& .pro-sidebar-inner": {
           background: `${
-            theme === "dark" ? "#111C43 !important" : "#fff !important"
+            theme === "dark" ? "#1E1440 !important" : "#fff !important"
           }`,
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
         },
         "& .pro-inner-item:hover": {
-          color: "#868dfb !important",
+          color: "#ff6b4a !important",
         },
         "& .pro-menu-item.active": {
-          color: "#6870fa !important",
+          color: "#7c2ff5 !important",
         },
         "& .pro-inner-item": {
           padding: "5px 35px 5px 20px !important",
@@ -91,7 +91,7 @@ const Sidebar = () => {
           color: `${theme !== "dark" && "#000"}`,
         },
       }}
-      className="!bg-white dark:bg-[#111C43]"
+      className="!bg-white dark:bg-[#1E1440]"
     >
       <ProSidebar
         collapsed={isCollapsed}
@@ -143,7 +143,7 @@ const Sidebar = () => {
                   style={{
                     cursor: "pointer",
                     borderRadius: "50%",
-                    border: "3px solid #5b6fe6",
+                    border: "3px solid #ff6b4a",
                   }}
                 />
               </Box>
