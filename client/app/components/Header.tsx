@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import NavItems from "../utils/NavItems";
 import { ThemeSwitcher } from "../utils/ThemeSwitcher";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
@@ -15,6 +15,7 @@ import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/aut
 import { toast } from "react-hot-toast";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./Loader/Loader";
+
 
 type Props = {
   open: boolean;
@@ -31,32 +32,47 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const { data } = useSession();
   const [socialAuth, { isSuccess }] = useSocialAuthMutation();
   const [logout, setLogout] = useState(false);
+  const socialAuthAttempted = useRef(false);
   useLogOutQuery(undefined, {
     skip: !logout,
   });
 
+  // Handles kicking off the backend social-auth exchange once a NextAuth
+  // (GitHub/Google) session exists. Guarded with a ref so it only fires
+  // once per session instead of retriggering on every state change, which
+  // previously caused an infinite loop of /me and /social-auth requests.
   useEffect(() => {
-    if (!isLoading) {
-      if (!userData) {
-        if (data) {
-          socialAuth({
-            email: data?.user?.email,
-            name: data?.user?.name,
-            avatar: data.user?.image,
-          });
-          refetch();
-        }
-      }
-      if (data === null) {
-        if (isSuccess) {
-          toast.success("Login Successfully");
-        }
-      }
-      if (data === null && !isLoading && !userData) {
-        setLogout(true);
-      }
+    if (isLoading) return;
+
+    if (userData) {
+      // Already fully logged in on the backend; reset the guard so a
+      // future logout -> login cycle can attempt social auth again.
+      socialAuthAttempted.current = false;
+      return;
     }
-  }, [data, userData, isLoading, isSuccess, refetch, socialAuth]);
+
+    if (data && !socialAuthAttempted.current) {
+      socialAuthAttempted.current = true;
+      socialAuth({
+        email: data?.user?.email,
+        name: data?.user?.name,
+        avatar: data.user?.image,
+      });
+    }
+
+    if (data === null && !userData) {
+      setLogout(true);
+    }
+  }, [data, userData, isLoading]);
+
+  // React to the social-auth mutation actually succeeding, rather than
+  // tying the toast to `data === null` (which was backwards).
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Login Successfully");
+      refetch();
+    }
+  }, [isSuccess]);
 
   useEffect(() => {
     const handleScroll = () => {
