@@ -171,7 +171,8 @@ const Sidebar = () => {
                   style={{
                     cursor: "pointer",
                     borderRadius: "50%",
-                    border: "3px solid rgba(155,112,255,.7)",\n                    boxShadow: "0 8px 24px rgba(110,75,180,.18)",
+                    border: "3px solid rgba(155,112,255,.7)",
+                    boxShadow: "0 8px 24px rgba(110,75,180,.18)",
                   }}
                 />
               </Box>
