@@ -317,8 +317,8 @@ body {
 
 
 .admin-topbar {
-  left: 16%;
-  width: 84%;
+  left: min(260px, 18vw);
+  width: calc(100% - min(260px, 18vw));
   background: rgba(248,246,253,.72);
   border-bottom: 1px solid var(--admin-panel-border);
   backdrop-filter: blur(20px);
