@@ -81,8 +81,8 @@ const AllInvoices = ({ isDashboard }: Props) => {
           checkboxSelection={false}
           rows={rows}
           columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
+          pageSizeOptions={[5]}
+          initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
           hideFooter
           sx={gridSx}
         />
@@ -127,8 +127,8 @@ const AllInvoices = ({ isDashboard }: Props) => {
             rows={rows}
             columns={columns}
             components={{ Toolbar: GridToolbar }}
-            pageSize={10}
-            rowsPerPageOptions={[10, 25, 50]}
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{ pagination: { paginationModel: { page: 0, pageSize: 10 } } }}
             sx={gridSx}
           />
         </Box>
