@@ -1,94 +1,40 @@
-import { styles } from "@/app/styles/style";
+"use client";
+
+import React from "react";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useGetUsersAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
-import React, { FC } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import Loader from "../../Loader/Loader"
+import Loader from "../../Loader/Loader";
 
-type Props = {
-  isDashboard?: boolean;
-}
+type Props = { isDashboard?: boolean };
 
-// const analyticsData = [
-//     { name: "January 2023", count: 440 },
-//     { name: "February 2023", count: 8200 },
-//     { name: "March 2023", count: 4033 },
-//     { name: "April 2023", count: 4502 },
-//     { name: "May 2023", count: 2042 },
-//     { name: "Jun 2023", count: 3454 },
-//     { name: "July 2023", count: 356 },
-//     { name: "Aug 2023", count: 5667 },
-//     { name: "Sept 2023", count: 1320 },
-//     { name: "Oct 2023", count: 6526 },
-//     { name: "Nov 2023", count: 5480 },
-//     { name: "December 2023", count: 485 },
-//   ];
+const ChartTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return <div className="admin-chart-tooltip"><p className="text-xs admin-muted">{label}</p><p className="mt-1 text-sm font-semibold admin-foreground">{Number(payload[0].value).toLocaleString()} users</p></div>;
+};
 
-const UserAnalytics = ({isDashboard}:Props) => {
+const UserAnalytics = ({ isDashboard }: Props) => {
   const { data, isLoading } = useGetUsersAnalyticsQuery({});
+  const analyticsData = (data?.users?.last12Months ?? []).map((item: any) => ({ name: item.month, count: Number(item.count || 0) }));
 
- const analyticsData: any = [];
-
-  data &&
-    data.users.last12Months.forEach((item: any) => {
-      analyticsData.push({ name: item.month, count: item.count });
-    });
-
+  if (isLoading) return <div className="admin-chart-loading"><Loader /></div>;
 
   return (
-    <>
-      {
-        isLoading ? (
-            <Loader />
-        ) : (
-            <div className={`${!isDashboard ? "mt-[50px]" : "mt-[50px] dark:bg-[#1E1440] shadow-sm pb-5 rounded-sm"}`}>
-            <div className={`${isDashboard ? "!ml-8 mb-5" : ''}`}>
-            <h1 className={`${styles.title} ${isDashboard && '!text-[20px]'} px-5 !text-start`}>
-               Users Analytics
-             </h1>
-             {
-               !isDashboard && (
-                 <p className={`${styles.label} px-5`}>
-                 Last 12 months analytics data{" "}
-               </p>
-               )
-             }
-            </div>
+    <section className={isDashboard ? "admin-chart-wrap admin-chart-dashboard" : "admin-analytics-page"}>
+      {!isDashboard && <div className="admin-analytics-heading"><span className="admin-eyebrow">PLATFORM PERFORMANCE</span><h1 className="admin-page-title">Users analytics</h1><p className="admin-muted mt-2">Registration activity across the last 12 months.</p></div>}
+      <div className="h-[300px] w-full">
+        {analyticsData.length ? <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={analyticsData} margin={{ top: 14, right: 18, left: -18, bottom: 0 }}>
+            <defs><linearGradient id="usersGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#9b70ff" stopOpacity={0.32} /><stop offset="95%" stopColor="#9b70ff" stopOpacity={0.015} /></linearGradient></defs>
+            <CartesianGrid stroke="var(--admin-chart-grid)" strokeDasharray="4 6" vertical={false} />
+            <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: "var(--admin-chart-text)", fontSize: 11 }} dy={10} />
+            <YAxis tickLine={false} axisLine={false} tick={{ fill: "var(--admin-chart-text)", fontSize: 11 }} width={42} />
+            <Tooltip content={<ChartTooltip />} cursor={{ stroke: "#9b70ff", strokeDasharray: "4 4" }} />
+            <Area type="monotone" dataKey="count" stroke="#9b70ff" strokeWidth={3} fill="url(#usersGradient)" activeDot={{ r: 6, strokeWidth: 0, fill: "#9b70ff" }} isAnimationActive animationDuration={1400} animationEasing="ease-out" />
+          </AreaChart>
+        </ResponsiveContainer> : <div className="admin-empty-chart">No user analytics are available yet.</div>}
+      </div>
+    </section>
+  );
+};
 
-         <div className={`w-full ${isDashboard ? 'h-[30vh]' : 'h-screen'} flex items-center justify-center`}>
-           <ResponsiveContainer width={isDashboard ? '100%' : '90%'} height={!isDashboard ? "50%" : '100%'}>
-             <AreaChart
-               data={analyticsData}
-               margin={{
-                 top: 20,
-                 right: 30,
-                 left: 0,
-                 bottom: 0,
-               }}
-             >
-               <XAxis dataKey="name" />
-               <YAxis />
-               <Tooltip />
-               <Area
-                 type="monotone"
-                 dataKey="count"
-                 stroke="#4d62d9"
-                 fill="#4d62d9"
-               />
-             </AreaChart>
-           </ResponsiveContainer>
-         </div>
-       </div>
-        )
-      }
-    </>
-  )
-}
-
-export default UserAnalytics
+export default UserAnalytics;
