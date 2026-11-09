@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["res.cloudinary.com", "randomuser.me", "images.unsplash.com", "ui-avatars.com"],
+    domains: [
+      "res.cloudinary.com",
+      "randomuser.me",
+      "images.unsplash.com",
+      "ui-avatars.com",
+    ],
   },
 };
 
