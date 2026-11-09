@@ -103,7 +103,7 @@ const Sidebar = () => {
           left: 0,
           height: "100vh",
           zIndex:99999999999999,
-          width: isCollapsed ? "76px" : "260px",
+          width: isCollapsed ? "76px" : "min(260px, 18vw)",
         }}
       >
         <Menu iconShape="square">
