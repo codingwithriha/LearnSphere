@@ -17,9 +17,25 @@ app.use(express.json({limit: '50mb'}));
 //cookie-parser
 app.use(cookieParser());
 
-//cors -> cross origin resource sharing
+// CORS: allow configured frontend origins, plus localhost during development.
+// ORIGIN supports a comma-separated list, e.g. https://learn-sphere-ui.vercel.app,http://localhost:3000
+const allowedOrigins = (process.env.ORIGIN || "https://learn-sphere-ui.vercel.app")
+    .split(',')
+    .map((value) => value.trim().replace(/^\[|\]$/g, '').replace(/^['"]|['"]$/g, '').trim())
+    .filter(Boolean);
+
+if (process.env.NODE_ENV !== 'production' && !allowedOrigins.includes('http://localhost:3000')) {
+    allowedOrigins.push('http://localhost:3000');
+}
+
 app.use(cors({
-    origin: process.env.ORIGIN || "https://learn-sphere-ui.vercel.app",
+    origin: (origin, callback) => {
+        // Requests without an Origin header (e.g. server-to-server or Postman) are allowed.
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(null, false);
+    },
     credentials: true,
 }));
 

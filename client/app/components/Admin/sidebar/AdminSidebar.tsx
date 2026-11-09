@@ -24,6 +24,7 @@ import {
 import avatarDefault from "../../../../public/assests/avatar.png";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 
@@ -53,10 +54,35 @@ const Sidebar = () => {
   const [logout, setlogout] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const syncSidebar = () => setIsCollapsed(window.innerWidth <= 900);
+    syncSidebar();
+    window.addEventListener("resize", syncSidebar);
+    return () => window.removeEventListener("resize", syncSidebar);
+  }, []);
+
+  useEffect(() => {
+    const activeItem = [
+      ["/admin", "Dashboard"],
+      ["/admin/users", "Users"],
+      ["/admin/invoices", "Invoices"],
+      ["/admin/create-course", "Create Course"],
+      ["/admin/courses", "Live Courses"],
+      ["/admin/hero", "Hero"],
+      ["/admin/faq", "FAQ"],
+      ["/admin/categories", "Categories"],
+      ["/admin/team", "Manage Team"],
+      ["/admin/courses-analytics", "Courses Analytics"],
+      ["/admin/orders-analytics", "Orders Analytics"],
+      ["/admin/users-analytics", "Users Analytics"],
+    ].find(([path]) => path === pathname || (path !== "/admin" && pathname.startsWith(path)));
+    if (activeItem) setSelected(activeItem[1]);
+  }, [pathname]);
 
   if (!mounted) {
     return null;
@@ -103,7 +129,7 @@ const Sidebar = () => {
           left: 0,
           height: "100vh",
           zIndex:99999999999999,
-          width: isCollapsed ? "76px" : "min(260px, 18vw)",
+          width: isCollapsed ? "76px" : "260px",
         }}
       >
         <Menu iconShape="square">
@@ -123,7 +149,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                <Link href="/" className="block">
-               <h3 className="text-[25px] font-Poppins uppercase dark:text-white text-black">
+               <h3 className="text-[22px] font-Poppins font-bold tracking-[.12em] uppercase dark:text-white text-black">
                   LearnSphere
                 </h3>
                </Link>
@@ -145,14 +171,15 @@ const Sidebar = () => {
                   style={{
                     cursor: "pointer",
                     borderRadius: "50%",
-                    border: "3px solid #ff6b4a",
+                    border: "3px solid rgba(155,112,255,.7)",
+                    boxShadow: "0 8px 24px rgba(110,75,180,.18)",
                   }}
                 />
               </Box>
               <Box textAlign="center">
                 <Typography
                   variant="h4"
-                  className="!text-[20px] text-black dark:text-[#ffffffc1]"
+                  className="!text-[16px] !font-semibold text-black dark:text-[#ffffffc1]"
                   sx={{ m: "10px 0 0 0" }}
                 >
                   {user?.name}
@@ -160,7 +187,7 @@ const Sidebar = () => {
                 <Typography
                   variant="h6"
                   sx={{ m: "10px 0 0 0" }}
-                  className="!text-[20px] text-black dark:text-[#ffffffc1] capitalize"
+                  className="!text-[12px] text-[#8b8499] dark:text-[#b9afca] capitalize"
                 >
                   - {user?.role}
                 </Typography>
