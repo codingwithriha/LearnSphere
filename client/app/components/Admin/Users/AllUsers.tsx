@@ -11,7 +11,6 @@ import {
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
 } from "@/redux/features/user/userApi";
-import { styles } from "@/app/styles/style";
 import { toast } from "react-hot-toast";
 
 type Props = { isTeam?: boolean };
@@ -164,9 +163,9 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
                 rows={rows}
                 columns={columns}
                 checkboxSelection
-                disableSelectionOnClick
-                pageSize={10}
-                rowsPerPageOptions={[10, 25, 50]}
+                disableRowSelectionOnClick
+                pageSizeOptions={[10, 25, 50]}
+                initialState={{ pagination: { paginationModel: { page: 0, pageSize: 10 } } }}
                 sx={{
                   border: 0,
                   color: "var(--admin-foreground)",
