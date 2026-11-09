@@ -21,7 +21,7 @@ import {
   SettingsIcon,
   ExitToAppIcon,
 } from "./Icon";
-import avatarDefault from "../../../../public/assests/avatar.png";
+import avatarDefault from "../../../../public/assests/avatar.svg";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -80,7 +80,11 @@ const Sidebar = () => {
       ["/admin/courses-analytics", "Courses Analytics"],
       ["/admin/orders-analytics", "Orders Analytics"],
       ["/admin/users-analytics", "Users Analytics"],
-    ].find(([path]) => path === pathname || (path !== "/admin" && pathname.startsWith(path)));
+    ].find(
+      ([path]) =>
+        pathname !== null &&
+        (path === pathname || (path !== "/admin" && pathname.startsWith(path))),
+    );
     if (activeItem) setSelected(activeItem[1]);
   }, [pathname]);
 
@@ -128,7 +132,7 @@ const Sidebar = () => {
           top: 0,
           left: 0,
           height: "100vh",
-          zIndex:99999999999999,
+          zIndex: 99999999999999,
           width: isCollapsed ? "76px" : "260px",
         }}
       >
@@ -148,12 +152,15 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-               <Link href="/" className="block">
-               <h3 className="text-[22px] font-Poppins font-bold tracking-[.12em] uppercase dark:text-white text-black">
-                  LearnSphere
-                </h3>
-               </Link>
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)} className="inline-block">
+                <Link href="/" className="block">
+                  <h3 className="text-[22px] font-Poppins font-bold tracking-[.12em] uppercase dark:text-white text-black">
+                    LearnSphere
+                  </h3>
+                </Link>
+                <IconButton
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="inline-block"
+                >
                   <ArrowBackIosIcon className="text-black dark:text-[#ffffffc1]" />
                 </IconButton>
               </Box>

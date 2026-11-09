@@ -2,7 +2,7 @@ import Image from "next/image";
 import { styles } from "../../../app/styles/style";
 import React, { FC, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
-import avatarIcon from "../../../public/assests/avatar.png";
+import avatarIcon from "../../../public/assests/avatar.svg";
 import {
   useEditProfileMutation,
   useUpdateAvatarMutation,
