@@ -1,162 +1,153 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
-import { useTheme } from "next-themes";
 import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import { useGetAllOrdersQuery } from "@/redux/features/orders/ordersApi";
 import { useGetAllUsersQuery } from "@/redux/features/user/userApi";
 import { AiOutlineMail } from "react-icons/ai";
+import { FiFileText, FiDollarSign, FiShoppingBag } from "react-icons/fi";
 
-type Props = {
-  isDashboard?: boolean;
-};
+type Props = { isDashboard?: boolean };
 
 const AllInvoices = ({ isDashboard }: Props) => {
-  const { theme, setTheme } = useTheme();
   const { isLoading, data } = useGetAllOrdersQuery({});
   const { data: usersData } = useGetAllUsersQuery({});
   const { data: coursesData } = useGetAllCoursesQuery({});
-
-  const [orderData, setOrderData] = useState<any>([]);
+  const [orderData, setOrderData] = useState<any[]>([]);
 
   useEffect(() => {
-    if (data) {
-      const temp = data.orders.map((item: any) => {
-        const user = usersData?.users.find(
-          (user: any) => user._id === item.userId
-        );
-        const course = coursesData?.courses.find(
-          (course: any) => course._id === item.courseId
-        );
-        return {
-          ...item,
-          userName: user?.name,
-          userEmail: user?.email,
-          title: course?.name,
-          price: "$" + course?.price,
-        };
-      });
-      setOrderData(temp);
-    }
+    if (!data) return;
+    const temp = data.orders.map((item: any) => {
+      const user = usersData?.users.find((entry: any) => entry._id === item.userId);
+      const course = coursesData?.courses.find((entry: any) => entry._id === item.courseId);
+      return {
+        ...item,
+        userName: user?.name || "Unknown learner",
+        userEmail: user?.email || "",
+        title: course?.name || "Course unavailable",
+        price: course?.price != null ? "$" + course.price : "—",
+      };
+    });
+    setOrderData(temp);
   }, [data, usersData, coursesData]);
 
+  const rows = useMemo(() => orderData.map((item: any) => ({
+    id: item._id,
+    userName: item.userName,
+    userEmail: item.userEmail,
+    title: item.title,
+    price: item.price,
+    created_at: format(item.createdAt),
+  })), [orderData]);
+
   const columns: any = [
-    { field: "id", headerName: "ID", flex: 0.3 },
-    { field: "userName", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 },
-    ...(isDashboard
-      ? []
-      : [
-          { field: "userEmail", headerName: "Email", flex: 1 },
-          { field: "title", headerName: "Course Title", flex: 1 },
-        ]),
-    { field: "price", headerName: "Price", flex: 0.5 },
-    ...(isDashboard
-      ? [{ field: "created_at", headerName: "Created At", flex: 0.5 }]
-      : [
-          {
-            field: " ",
-            headerName: "Email",
-            flex: 0.2,
-            renderCell: (params: any) => {
-              return (
-                <a href={`mailto:${params.row.userEmail}`}>
-                  <AiOutlineMail
-                    className="dark:text-white text-black"
-                    size={20}
-                  />
-                </a>
-              );
-            },
-          },
-        ]),
+    { field: "userName", headerName: "Learner", flex: 0.9, minWidth: 140 },
+    ...(!isDashboard ? [
+      { field: "userEmail", headerName: "Email address", flex: 1.2, minWidth: 190 },
+      { field: "title", headerName: "Course", flex: 1.2, minWidth: 180 },
+    ] : []),
+    { field: "price", headerName: "Amount", flex: 0.65, minWidth: 100 },
+    ...(isDashboard ? [
+      { field: "created_at", headerName: "Date", flex: 0.8, minWidth: 120 },
+    ] : [
+      {
+        field: "contact",
+        headerName: "Contact",
+        sortable: false,
+        filterable: false,
+        minWidth: 90,
+        renderCell: (params: any) => params.row.userEmail ? (
+          <a className="admin-icon-action" href={`mailto:${params.row.userEmail}`} aria-label={`Email ${params.row.userName}`}>
+            <AiOutlineMail size={18} />
+          </a>
+        ) : <span className="admin-muted">—</span>,
+      },
+      { field: "created_at", headerName: "Purchased", flex: 0.8, minWidth: 120 },
+    ]),
   ];
 
-  const rows: any = [];
+  const totalOrders = rows.length;
+  const totalRevenue = orderData.reduce((sum: number, item: any) => sum + (Number(item.price?.replace("$", "")) || 0), 0);
 
-  orderData &&
-    orderData.forEach((item: any) => {
-      rows.push({
-        id: item._id,
-        userName: item.userName,
-        userEmail: item.userEmail,
-        title: item.title,
-        price: item.price,
-        created_at: format(item.createdAt),
-      });
-    });
+  if (isLoading) return <Loader />;
+
+  if (isDashboard) {
+    return (
+      <Box className="admin-grid-wrap">
+        <DataGrid
+          autoHeight
+          checkboxSelection={false}
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          hideFooter
+          sx={gridSx}
+        />
+      </Box>
+    );
+  }
 
   return (
-    <div className={!isDashboard ? "mt-[120px]" : "mt-[0px]"}>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <Box m={isDashboard ? "0" : "40px"}>
-          <Box
-            m={isDashboard ? "0" : "40px 0 0 0"}
-            height={isDashboard ? "35vh" : "90vh"}
-            overflow={"hidden"}
-            sx={{
-              "& .MuiDataGrid-root": {
-                border: "none",
-                outline: "none",
-              },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-row": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderBottom:
-                  theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
-              },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none!important",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-                borderBottom: "none",
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
-              },
-              "& .MuiDataGrid-footerContainer": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-              },
-              "& .MuiCheckbox-root": {
-                color:
-                  theme === "dark" ? `#b7ebde !important` : `#000 !important`,
-              },
-              "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: `#fff !important`,
-              },
-            }}
-          >
-            <DataGrid
-              checkboxSelection={isDashboard ? false : true}
-              rows={rows}
-              columns={columns}
-              components={isDashboard ? {} : { Toolbar: GridToolbar }}
-            />
-          </Box>
+    <main className="admin-table-page">
+      <div className="admin-table-heading">
+        <div>
+          <span className="admin-eyebrow">PAYMENTS & ENROLLMENTS</span>
+          <h1 className="admin-page-title">Invoices</h1>
+          <p className="admin-table-description">Review course purchases, payment amounts and learner details.</p>
+        </div>
+      </div>
+
+      <div className="admin-table-stats">
+        <div className="admin-table-stat">
+          <span className="admin-table-stat-icon violet"><FiFileText /></span>
+          <div><p>Total invoices</p><strong>{totalOrders.toLocaleString()}</strong></div>
+        </div>
+        <div className="admin-table-stat">
+          <span className="admin-table-stat-icon green"><FiDollarSign /></span>
+          <div><p>Recorded revenue</p><strong>${totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong></div>
+        </div>
+        <div className="admin-table-stat">
+          <span className="admin-table-stat-icon coral"><FiShoppingBag /></span>
+          <div><p>Course purchases</p><strong>{totalOrders.toLocaleString()}</strong></div>
+        </div>
+      </div>
+
+      <section className="admin-panel admin-data-panel">
+        <div className="admin-panel-heading">
+          <div><span className="admin-eyebrow">TRANSACTION HISTORY</span><h2 className="admin-panel-title">All invoices</h2></div>
+          <span className="admin-period-pill">{totalOrders} records</span>
+        </div>
+        <Box className="admin-grid-wrap">
+          <DataGrid
+            autoHeight
+            checkboxSelection
+            rows={rows}
+            columns={columns}
+            components={{ Toolbar: GridToolbar }}
+            pageSize={10}
+            rowsPerPageOptions={[10, 25, 50]}
+            sx={gridSx}
+          />
         </Box>
-      )}
-    </div>
+      </section>
+    </main>
   );
+};
+
+const gridSx = {
+  border: 0,
+  color: "var(--admin-foreground)",
+  "& .MuiDataGrid-columnHeaders": { background: "rgba(155,112,255,.09)", borderBottom: "1px solid var(--admin-panel-border)", color: "var(--admin-foreground)" },
+  "& .MuiDataGrid-cell": { borderColor: "var(--admin-panel-border)" },
+  "& .MuiDataGrid-row:hover": { background: "rgba(155,112,255,.055)" },
+  "& .MuiDataGrid-footerContainer": { borderColor: "var(--admin-panel-border)", color: "var(--admin-foreground)" },
+  "& .MuiCheckbox-root": { color: "#9870ed" },
+  "& .MuiDataGrid-columnSeparator": { color: "var(--admin-panel-border)" },
+  "& .MuiDataGrid-toolbarContainer": { padding: "10px 14px" },
+  "& .MuiButton-root": { color: "var(--admin-muted)" },
 };
 
 export default AllInvoices;

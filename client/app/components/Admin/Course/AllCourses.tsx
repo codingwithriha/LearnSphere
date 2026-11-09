@@ -1,199 +1,151 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Modal } from "@mui/material";
 import { AiOutlineDelete } from "react-icons/ai";
-import { useTheme } from "next-themes";
-import { FiEdit2 } from "react-icons/fi";
-import {
-  useDeleteCourseMutation,
-  useGetAllCoursesQuery,
-} from "@/redux/features/courses/coursesApi";
+import { FiEdit2, FiBookOpen, FiStar, FiUsers } from "react-icons/fi";
+import { useDeleteCourseMutation, useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
-import { styles } from "@/app/styles/style";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
-type Props = {};
-
-const AllCourses = (props: Props) => {
-  const { theme, setTheme } = useTheme();
+const AllCourses = () => {
   const [open, setOpen] = useState(false);
   const [courseId, setCourseId] = useState("");
-  const { isLoading, data, refetch } = useGetAllCoursesQuery(
-    {},
-    { refetchOnMountOrArgChange: true }
-  );
+  const { isLoading, data, refetch } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true });
   const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation({});
-  const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "title", headerName: "Course Title", flex: 1 },
-    { field: "ratings", headerName: "Ratings", flex: 0.5 },
-    { field: "purchased", headerName: "Purchased", flex: 0.5 },
-    { field: "created_at", headerName: "Created At", flex: 0.5 },
+
+  const courses = data?.courses || [];
+  const rows = useMemo(() => courses.map((item: any) => ({
+    id: item._id,
+    title: item.name,
+    ratings: item.ratings ?? 0,
+    purchased: item.purchased ?? 0,
+    created_at: format(item.createdAt),
+  })), [courses]);
+
+  const columns: any = [
+    { field: "title", headerName: "Course title", flex: 1.5, minWidth: 220 },
     {
-      field: "  ",
-      headerName: "Edit",
-      flex: 0.2,
-      renderCell: (params: any) => {
-        return (
-          <>
-            <Link href={`/admin/edit-course/${params.row.id}`}>
-              <FiEdit2 className="dark:text-white text-black" size={20} />
-            </Link>
-          </>
-        );
-      },
+      field: "ratings",
+      headerName: "Rating",
+      flex: 0.65,
+      minWidth: 100,
+      renderCell: (params: any) => <span className="admin-course-rating"><FiStar size={14} /> {Number(params.value || 0).toFixed(1)}</span>,
     },
+    { field: "purchased", headerName: "Enrollments", flex: 0.7, minWidth: 110 },
+    { field: "created_at", headerName: "Created", flex: 0.8, minWidth: 125 },
     {
-      field: " ",
-      headerName: "Delete",
-      flex: 0.2,
-      renderCell: (params: any) => {
-        return (
-          <>
-            <Button
-              onClick={() => {
-                setOpen(!open);
-                setCourseId(params.row.id);
-              }}
-            >
-              <AiOutlineDelete
-                className="dark:text-white text-black"
-                size={20}
-              />
-            </Button>
-          </>
-        );
-      },
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      filterable: false,
+      minWidth: 110,
+      flex: 0.6,
+      renderCell: (params: any) => (
+        <div className="flex items-center gap-2">
+          <Link className="admin-icon-action" href={`/admin/edit-course/${params.row.id}`} aria-label={`Edit ${params.row.title}`}>
+            <FiEdit2 size={16} />
+          </Link>
+          <Button
+            className="!min-w-0 !p-2 !rounded-xl !text-rose-500 hover:!bg-rose-500/10"
+            onClick={() => { setCourseId(params.row.id); setOpen(true); }}
+            aria-label={`Delete ${params.row.title}`}
+          >
+            <AiOutlineDelete size={18} />
+          </Button>
+        </div>
+      ),
     },
   ];
-
-  const rows: any = [];
-
-  {
-    data &&
-      data.courses.forEach((item: any) => {
-        rows.push({
-          id: item._id,
-          title: item.name,
-          ratings: item.ratings,
-          purchased: item.purchased,
-          created_at: format(item.createdAt),
-        });
-      });
-  }
 
   useEffect(() => {
     if (isSuccess) {
       setOpen(false);
       refetch();
-      toast.success("Course Deleted Successfully");
+      toast.success("Course deleted successfully");
     }
-    if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
-      }
-    }
-  }, [isSuccess, error,refetch]);
+    if (error && "data" in error) toast.error((error as any).data.message);
+  }, [isSuccess, error, refetch]);
 
   const handleDelete = async () => {
-    const id = courseId;
-    await deleteCourse(id);
+    if (courseId) await deleteCourse(courseId);
   };
 
+  const totalEnrolments = courses.reduce((sum: number, item: any) => sum + (Number(item.purchased) || 0), 0);
+  const averageRating = courses.length
+    ? courses.reduce((sum: number, item: any) => sum + (Number(item.ratings) || 0), 0) / courses.length
+    : 0;
+
   return (
-    <div className="mt-[120px]">
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <Box m="20px">
-          <Box
-            m="40px 0 0 0"
-            height="80vh"
-            sx={{
-              "& .MuiDataGrid-root": {
-                border: "none",
-                outline: "none",
-              },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-row": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderBottom:
-                  theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
-              },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none!important",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-                borderBottom: "none",
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
-              },
-              "& .MuiDataGrid-footerContainer": {
-                color: theme === "dark" ? "#fff" : "#000",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
-              },
-              "& .MuiCheckbox-root": {
-                color:
-                  theme === "dark" ? `#b7ebde !important` : `#000 !important`,
-              },
-              "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: `#fff !important`,
-              },
-            }}
-          >
-            <DataGrid checkboxSelection rows={rows} columns={columns} />
-          </Box>
-          {open && (
-            <Modal
-              open={open}
-              onClose={() => setOpen(!open)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-            >
-              <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[450px] bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none">
-                <h1 className={`${styles.title}`}>
-                  Are you sure you want to delete this course?
-                </h1>
-                <div className="flex w-full items-center justify-between mb-6 mt-4">
-                  <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#47d097]`}
-                    onClick={() => setOpen(!open)}
-                  >
-                    Cancel
-                  </div>
-                  <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#d63f3f]`}
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </div>
-                </div>
-              </Box>
-            </Modal>
-          )}
-        </Box>
+    <main className="admin-table-page">
+      <div className="admin-table-heading">
+        <div>
+          <span className="admin-eyebrow">LEARNING CATALOGUE</span>
+          <h1 className="admin-page-title">Live courses</h1>
+          <p className="admin-table-description">Manage published learning content, monitor enrolments and keep your catalogue up to date.</p>
+        </div>
+      </div>
+
+      {isLoading ? <Loader /> : (
+        <>
+          <div className="admin-table-stats">
+            <div className="admin-table-stat">
+              <span className="admin-table-stat-icon violet"><FiBookOpen /></span>
+              <div><p>Total courses</p><strong>{courses.length.toLocaleString()}</strong></div>
+            </div>
+            <div className="admin-table-stat">
+              <span className="admin-table-stat-icon green"><FiUsers /></span>
+              <div><p>Total enrolments</p><strong>{totalEnrolments.toLocaleString()}</strong></div>
+            </div>
+            <div className="admin-table-stat">
+              <span className="admin-table-stat-icon coral"><FiStar /></span>
+              <div><p>Average rating</p><strong>{averageRating.toFixed(1)}<small className="admin-stat-suffix"> / 5</small></strong></div>
+            </div>
+          </div>
+
+          <section className="admin-panel admin-data-panel">
+            <div className="admin-panel-heading">
+              <div><span className="admin-eyebrow">CONTENT MANAGEMENT</span><h2 className="admin-panel-title">Course library</h2></div>
+              <span className="admin-period-pill">{courses.length} courses</span>
+            </div>
+            <Box className="admin-grid-wrap">
+              <DataGrid
+                autoHeight
+                checkboxSelection
+                rows={rows}
+                columns={columns}
+                pageSize={10}
+                rowsPerPageOptions={[10, 25, 50]}
+                sx={{
+                  border: 0,
+                  color: "var(--admin-foreground)",
+                  "& .MuiDataGrid-columnHeaders": { background: "rgba(155,112,255,.09)", borderBottom: "1px solid var(--admin-panel-border)", color: "var(--admin-foreground)" },
+                  "& .MuiDataGrid-cell": { borderColor: "var(--admin-panel-border)" },
+                  "& .MuiDataGrid-row:hover": { background: "rgba(155,112,255,.055)" },
+                  "& .MuiDataGrid-footerContainer": { borderColor: "var(--admin-panel-border)", color: "var(--admin-foreground)" },
+                  "& .MuiCheckbox-root": { color: "#9870ed" },
+                  "& .MuiDataGrid-columnSeparator": { color: "var(--admin-panel-border)" },
+                }}
+              />
+            </Box>
+          </section>
+        </>
       )}
-    </div>
+
+      <Modal open={open} onClose={() => setOpen(false)} aria-labelledby="delete-course-title">
+        <Box className="admin-modal-card">
+          <span className="admin-eyebrow">CONFIRM ACTION</span>
+          <h2 id="delete-course-title" className="admin-modal-title">Delete this course?</h2>
+          <p className="admin-table-description">The selected course will be removed from the catalogue. This action cannot be undone.</p>
+          <div className="admin-modal-actions">
+            <button className="admin-secondary-action" onClick={() => setOpen(false)}>Cancel</button>
+            <button className="admin-danger-action" onClick={handleDelete}>Delete course</button>
+          </div>
+        </Box>
+      </Modal>
+    </main>
   );
 };
 
