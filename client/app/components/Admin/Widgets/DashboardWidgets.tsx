@@ -1,172 +1,115 @@
-import React, { FC, useEffect, useState } from "react";
+"use client";
+
+import React from "react";
+import { useGetOrdersAnalyticsQuery, useGetUsersAnalyticsQuery, useGetCoursesAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
 import UserAnalytics from "../Analytics/UserAnalytics";
-import { BiBorderLeft } from "react-icons/bi";
-import { PiUsersFourLight } from "react-icons/pi";
-import { Box, CircularProgress } from "@mui/material";
 import OrdersAnalytics from "../Analytics/OrdersAnalytics";
 import AllInvoices from "../Order/AllInvoices";
-import {
-  useGetOrdersAnalyticsQuery,
-  useGetUsersAnalyticsQuery,
-} from "@/redux/features/analytics/analyticsApi";
+import { HiOutlineUsers, HiOutlineShoppingBag, HiOutlineAcademicCap, HiOutlineChartBar } from "react-icons/hi2";
+import { FiArrowUpRight, FiArrowDownRight } from "react-icons/fi";
 
-type Props = {
-  open?: boolean;
-  value?: number;
-};
-
-const CircularProgressWithLabel: FC<Props> = ({ open, value }) => {
-  return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
-      <CircularProgress
-        variant="determinate"
-        value={value}
-        size={45}
-        color={value && value > 99 ? "info" : "error"}
-        thickness={4}
-        style={{ zIndex: open ? -1 : 1 }}
-      />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      ></Box>
-    </Box>
-  );
-};
-
-const DashboardWidgets: FC<Props> = ({ open }) => {
-  const [ordersComparePercentage, setOrdersComparePercentage] = useState<any>();
-  const [userComparePercentage, setuserComparePercentage] = useState<any>();
-
-  const { data, isLoading } = useGetUsersAnalyticsQuery({});
-  const { data: ordersData, isLoading: ordersLoading } =
-    useGetOrdersAnalyticsQuery({});
-
-  useEffect(() => {
-    if (isLoading && ordersLoading) {
-      return;
-    } else {
-      if (data && ordersData) {
-        const usersLastTwoMonths = data.users.last12Months.slice(-2);
-        const ordersLastTwoMonths = ordersData.orders.last12Months.slice(-2);
-
-        if (
-          usersLastTwoMonths.length === 2 &&
-          ordersLastTwoMonths.length === 2
-        ) {
-          const usersCurrentMonth = usersLastTwoMonths[1].count;
-          const usersPreviousMonth = usersLastTwoMonths[0].count;
-          const ordersCurrentMonth = ordersLastTwoMonths[1].count;
-          const ordersPreviousMonth = ordersLastTwoMonths[0].count;
-
-          const usersPercentChange = usersPreviousMonth !== 0 ?
-            ((usersCurrentMonth - usersPreviousMonth) / usersPreviousMonth) *
-            100 : 100;
-
-          const ordersPercentChange = ordersPreviousMonth !== 0 ?
-            ((ordersCurrentMonth - ordersPreviousMonth) / ordersPreviousMonth) *
-            100 : 100;
-
-          setuserComparePercentage({
-            currentMonth: usersCurrentMonth,
-            previousMonth: usersPreviousMonth,
-            percentChange: usersPercentChange,
-          });
-
-          setOrdersComparePercentage({
-            currentMonth: ordersCurrentMonth,
-            previousMonth: ordersPreviousMonth,
-            percentChange: ordersPercentChange,
-          });
-        }
-      }
-    }
-  }, [isLoading, ordersLoading, data, ordersData]);
-
-  return (
-    <div className="mt-[30px] min-h-screen">
-      <div className="grid grid-cols-[75%,25%]">
-        <div className="p-8 ">
-          <UserAnalytics isDashboard={true} />
-        </div>
-
-        <div className="pt-[80px] pr-8">
-          <div className="w-full dark:bg-[#1E1440] rounded-sm shadow">
-            <div className="flex items-center p-5 justify-between">
-              <div className="">
-                <BiBorderLeft className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
-                <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {ordersComparePercentage?.currentMonth}
-                </h5>
-                <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
-                  Sales Obtained
-                </h5>
-              </div>
-              <div>
-                <CircularProgressWithLabel value={
-                  ordersComparePercentage?.percentChange > 0 
-                  ? 100 
-                  : 0
-                } open={open} />
-                <h5 className="text-center pt-4">
-                 {
-                  ordersComparePercentage?.percentChange > 0 
-                  ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
-                  : "-" + ordersComparePercentage?.percentChange.toFixed(2)
-                 } %
-                </h5>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full dark:bg-[#1E1440] rounded-sm shadow my-8">
-            <div className="flex items-center p-5 justify-between">
-              <div className="">
-                <PiUsersFourLight className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
-                <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {userComparePercentage?.currentMonth}
-                </h5>
-                <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
-                  New Users
-                </h5>
-              </div>
-              <div>
-                <CircularProgressWithLabel value={
-                  userComparePercentage?.percentChange > 0 
-                  ? 100 
-                  : 0
-                } open={open} />
-                <h5 className="text-center pt-4">
-                  {userComparePercentage?.percentChange > 0
-                    ? "+" + userComparePercentage?.percentChange.toFixed(2) 
-                    : "-" + userComparePercentage?.percentChange.toFixed(2)} %
-                </h5>
-              </div>
-            </div>
-          </div>
-        </div>
+const StatCard = ({ label, value, caption, icon: Icon, tone = "violet" }: any) => (
+  <article className={`admin-stat-card admin-stat-${tone}`}>
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <p className="admin-muted text-sm font-medium">{label}</p>
+        <p className="mt-3 text-3xl font-semibold tracking-tight admin-foreground">{value ?? "—"}</p>
+        <p className="mt-2 text-xs admin-muted">{caption}</p>
       </div>
-
-      <div className="grid grid-cols-[65%,35%] mt-[-20px]">
-        <div className="dark:bg-[#111c43] w-[94%] mt-[30px] h-[40vh] shadow-sm m-auto">
-          <OrdersAnalytics isDashboard={true} />
-        </div>
-        <div className="p-5">
-          <h5 className="dark:text-[#fff] text-black text-[20px] font-[400] font-Poppins pb-3">
-            Recent Transactions
-          </h5>
-          <AllInvoices isDashboard={true} />
-        </div>
-      </div>
+      <span className="admin-stat-icon"><Icon size={21} /></span>
     </div>
+  </article>
+);
+
+const DashboardWidgets = () => {
+  const { data: usersData, isLoading: usersLoading } = useGetUsersAnalyticsQuery({});
+  const { data: ordersData, isLoading: ordersLoading } = useGetOrdersAnalyticsQuery({});
+  const { data: coursesData, isLoading: coursesLoading } = useGetCoursesAnalyticsQuery({});
+
+  const users = usersData?.users?.last12Months ?? [];
+  const orders = ordersData?.orders?.last12Months ?? [];
+  const courses = coursesData?.courses?.last12Months ?? [];
+  const totalUsers = users.reduce((sum: number, item: any) => sum + Number(item.count || 0), 0);
+  const totalOrders = orders.reduce((sum: number, item: any) => sum + Number(item.count || 0), 0);
+  const totalCourses = courses.reduce((sum: number, item: any) => sum + Number(item.count || 0), 0);
+  const percent = (items: any[]) => {
+    if (items.length < 2) return null;
+    const previous = Number(items[items.length - 2]?.count || 0);
+    const current = Number(items[items.length - 1]?.count || 0);
+    if (!previous) return current ? null : 0;
+    return ((current - previous) / previous) * 100;
+  };
+  const userChange = percent(users);
+  const orderChange = percent(orders);
+
+  return (
+    <main className="admin-dashboard space-y-7">
+      <section className="admin-welcome-panel">
+        <div className="relative z-10 max-w-2xl">
+          <span className="admin-eyebrow">LEARNING PLATFORM OVERVIEW</span>
+          <h1 className="mt-3 text-3xl md:text-4xl font-semibold tracking-tight text-white">Your learning ecosystem, at a glance.</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-white/75">Monitor platform activity, follow growth trends, and keep your courses and community moving forward.</p>
+        </div>
+        <div className="admin-welcome-orb" aria-hidden="true"><span /><span /><span /></div>
+        <div className="admin-welcome-foot"><span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" /> Platform analytics</div>
+      </section>
+
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatCard label="Users this year" value={usersLoading ? "…" : totalUsers.toLocaleString()} caption="Combined monthly registrations" icon={HiOutlineUsers} tone="violet" />
+        <StatCard label="Orders this year" value={ordersLoading ? "…" : totalOrders.toLocaleString()} caption="Orders across the last 12 months" icon={HiOutlineShoppingBag} tone="coral" />
+        <StatCard label="Courses added" value={coursesLoading ? "…" : totalCourses.toLocaleString()} caption="Monthly course additions" icon={HiOutlineAcademicCap} tone="blue" />
+        <StatCard label="User growth" value={userChange === null ? "—" : `${userChange >= 0 ? "+" : ""}${userChange.toFixed(1)}%`} caption="Compared with the previous month" icon={HiOutlineChartBar} tone="green" />
+      </section>
+
+      <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.55fr)_minmax(280px,0.8fr)] gap-5">
+        <div className="admin-panel min-w-0">
+          <div className="admin-panel-heading">
+            <div><span className="admin-eyebrow">GROWTH</span><h2 className="admin-panel-title">User activity</h2></div>
+            <span className="admin-period-pill">Last 12 months</span>
+          </div>
+          <UserAnalytics isDashboard />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-5">
+          <div className="admin-mini-panel">
+            <div className="flex items-center justify-between">
+              <span className="admin-muted text-sm">Monthly orders</span>
+              <span className="admin-stat-icon admin-stat-coral"><HiOutlineShoppingBag size={19} /></span>
+            </div>
+            <div className="mt-4 flex items-end justify-between gap-3">
+              <div><p className="text-3xl font-semibold admin-foreground">{ordersLoading ? "…" : orders[orders.length - 1]?.count ?? 0}</p><p className="mt-1 text-xs admin-muted">Latest month</p></div>
+              {orderChange !== null && <span className={`admin-change ${orderChange >= 0 ? "positive" : "negative"}`}>{orderChange >= 0 ? <FiArrowUpRight /> : <FiArrowDownRight />}{Math.abs(orderChange).toFixed(1)}%</span>}
+            </div>
+            <div className="admin-sparkline" aria-hidden="true">{orders.slice(-8).map((item: any, index: number) => <span key={item.month || index} style={{ height: `${Math.max(12, Math.min(100, Number(item.count || 0) / Math.max(1, ...orders.map((v: any) => Number(v.count || 0))) * 100))}%` }} />)}</div>
+          </div>
+          <div className="admin-mini-panel">
+            <div className="flex items-center justify-between">
+              <span className="admin-muted text-sm">Platform pulse</span>
+              <span className="admin-stat-icon admin-stat-green"><HiOutlineChartBar size={19} /></span>
+            </div>
+            <p className="mt-4 text-2xl font-semibold admin-foreground">{ordersLoading || usersLoading ? "Loading…" : (totalUsers + totalOrders).toLocaleString()}</p>
+            <p className="mt-1 text-xs admin-muted">User registrations + orders in the selected period</p>
+            <div className="mt-5 h-2 overflow-hidden rounded-full admin-progress-track"><div className="admin-progress-fill" style={{ width: totalUsers + totalOrders ? `${Math.max(8, totalOrders / (totalUsers + totalOrders) * 100)}%` : "0%" }} /></div>
+            <p className="mt-2 text-[11px] admin-muted">Activity mix · based on available analytics</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="admin-panel min-w-0">
+        <div className="admin-panel-heading">
+          <div><span className="admin-eyebrow">REVENUE ACTIVITY</span><h2 className="admin-panel-title">Order trends</h2></div>
+          <span className="admin-period-pill">Last 12 months</span>
+        </div>
+        <OrdersAnalytics isDashboard />
+      </section>
+
+      <section className="admin-panel min-w-0">
+        <div className="admin-panel-heading">
+          <div><span className="admin-eyebrow">LATEST ACTIVITY</span><h2 className="admin-panel-title">Recent transactions</h2></div>
+          <span className="admin-period-pill">Latest orders</span>
+        </div>
+        <AllInvoices isDashboard />
+      </section>
+    </main>
   );
 };
 

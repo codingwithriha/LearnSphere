@@ -70,18 +70,20 @@ const Sidebar = () => {
     <Box
       sx={{
         "& .pro-sidebar-inner": {
-          background: `${
-            theme === "dark" ? "#1E1440 !important" : "#fff !important"
-          }`,
+          background: `${theme === "dark" ? "rgba(27,21,43,.94) !important" : "rgba(255,255,255,.9) !important"}`,
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
         },
         "& .pro-inner-item:hover": {
-          color: "#ff6b4a !important",
+          color: "#9b70ff !important",
+          background: "rgba(155,112,255,.10) !important",
+          borderRadius: "12px",
         },
         "& .pro-menu-item.active": {
-          color: "#7c2ff5 !important",
+          color: "#9b70ff !important",
+          background: "rgba(155,112,255,.12) !important",
+          borderRadius: "12px",
         },
         "& .pro-inner-item": {
           padding: "5px 35px 5px 20px !important",
@@ -91,7 +93,7 @@ const Sidebar = () => {
           color: `${theme !== "dark" && "#000"}`,
         },
       }}
-      className="!bg-white dark:bg-[#1E1440]"
+      className="admin-sidebar-shell !bg-white dark:bg-[#1E1440]"
     >
       <ProSidebar
         collapsed={isCollapsed}
@@ -101,7 +103,7 @@ const Sidebar = () => {
           left: 0,
           height: "100vh",
           zIndex:99999999999999,
-          width: isCollapsed ? "0%" : "16%",
+          width: isCollapsed ? "76px" : "min(260px, 18vw)",
         }}
       >
         <Menu iconShape="square">
