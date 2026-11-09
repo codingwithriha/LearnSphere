@@ -341,5 +341,5 @@ body {
 .admin-sidebar-shell .pro-inner-item { margin:3px 10px;border-radius:12px;transition:background .2s ease,color .2s ease; }
 .admin-sidebar-shell .pro-icon-wrapper { min-width:34px!important; }
 @media (max-width: 900px) {
-  .admin-topbar { left:76px;width:calc(100% - 76px);padding-left:14px;padding-right:14px; }
+  .admin-topbar { left:min(260px,18vw);width:calc(100% - min(260px,18vw));padding-left:14px;padding-right:14px; }
 }
