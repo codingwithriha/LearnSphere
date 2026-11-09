@@ -16,7 +16,7 @@ const AllCourses = () => {
   const { isLoading, data, refetch } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true });
   const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation({});
 
-  const courses = data?.courses || [];
+  const courses = useMemo(() => data?.courses ?? [], [data?.courses]);
   const rows = useMemo(() => courses.map((item: any) => ({
     id: item._id,
     title: item.name,
@@ -116,8 +116,8 @@ const AllCourses = () => {
                 checkboxSelection
                 rows={rows}
                 columns={columns}
-                pageSize={10}
-                rowsPerPageOptions={[10, 25, 50]}
+                pageSizeOptions={[10, 25, 50]}
+                initialState={{ pagination: { paginationModel: { page: 0, pageSize: 10 } } }}
                 sx={{
                   border: 0,
                   color: "var(--admin-foreground)",
